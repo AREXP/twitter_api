@@ -44,20 +44,13 @@ def get_top_movies(number):
     top_movies = []
     for page in range(1, total_pages + 1):
         top_movies += get_popular_movies(page)
-    if top_movies is None or len(top_movies) < number:
+    if len(top_movies) < number:
         return 'Some error occurred while requesting movies'
     result = [(f'{movie["id"]}/{movie["title"]}/{position + 1}/'
                f'{movie["release_date"]}/{movie["popularity"]}/'
                f'{get_country(movie["id"])}')
               for position, movie in enumerate(top_movies[:number])]
     return result
-
-
-def get_country(movie_id):
-    url = f'{API_URL}/movie/{movie_id}'
-    response = connect_to_endpoint(url)
-    countries = response['production_countries']
-    return 'Not specified' if not countries else countries[0]['name']
 
 
 def get_person_info(person_id):
