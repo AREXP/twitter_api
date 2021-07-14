@@ -2,6 +2,7 @@ import argparse
 import math
 import os
 import requests
+import sys
 
 # To set your environment variables in your terminal run the following line:
 # export 'BEARER_TOKEN'='<your_bearer_token>'
@@ -18,6 +19,13 @@ ACTORS_HEADER = 'NAME / CHARACTER / PLACE OF BIRTH / BIRTHDAY'
 
 class InvalidParameterError(Exception):
     pass
+
+
+class ValidateParameter(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        if values <= 0:
+            sys.exit('This parameter must be positive integer number')
+        setattr(namespace, self.dest, values)
 
 
 def request_data(endpoint, params=None):
@@ -54,18 +62,15 @@ def get_countries(movie_id):
 
 
 def get_top_movies(number):
-    if number <= 0:
-        raise InvalidParameterError
     total_pages = math.ceil(number / MOVIES_PER_PAGE)
     top_movies = []
     for page in range(1, total_pages + 1):
         top_movies += get_popular_movies(page)
 
     result = []
-    for index, movie in enumerate(top_movies[:number]):
+    for position, movie in enumerate(top_movies[:number], start=1):
         id = movie.get('id')
         title = movie.get('title')
-        position = index + 1
         date = movie.get('release_date')
         rating = movie.get('popularity')
         origin = get_countries(id)
@@ -81,8 +86,6 @@ def get_person_info(person_id):
 
 
 def get_movie_actors(movie_id):
-    if movie_id <= 0:
-        raise InvalidParameterError
     endpoint = f'/movie/{movie_id}/credits'
     response = request_data(endpoint)
     actors = [person for person in response['cast']
@@ -107,6 +110,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-n',
                         '--number',
+                        action=ValidateParameter,
                         help=('Specify the required number of films for '
                               'output'),
                         type=int)
