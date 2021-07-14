@@ -14,10 +14,10 @@ $ pip install -r requirements.txt
 
 - To set your bearer token run the following line:
 ```
-# export 'BEARER_TOKEN'='<your_bearer_token>'
+$ export 'BEARER_TOKEN'='<your_bearer_token>'
 ```
 
-- Run app with one of two parameters (or both of them):
+- Run app with one of two parameters:
 
 *Provide -n or --number parameter with integer number to get movies:*
 ```
